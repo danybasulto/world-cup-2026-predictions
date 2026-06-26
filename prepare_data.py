@@ -42,3 +42,45 @@ for idx, row in df.iterrows():
       df.at[idx, "forma_b"] = sum(list_b) / len(list_b)
   else:
       df.at[idx, "forma_b"] = 1 # valor por defecto
+  
+  # --- Actualizar puntos Elo ---
+  elo_a = teams_dict[team_a]["elo"]
+  elo_b = teams_dict[team_b]["elo"]
+
+  # Calcular expectativa de victoria
+  expect_a = 1 / (1 + 10 ** ((elo_b - elo_a) / 400))
+  expect_b = 1 / (1 + 10 ** ((elo_a - elo_b) / 400))
+
+  result = row["resultado"]
+
+  if result == 1:
+    # Gano el equipo A
+    teams_dict[team_a]["last_matches"].append(3)
+    teams_dict[team_b]["last_matches"].append(0)
+  elif result == -1:
+    # Gano el equipo B
+    teams_dict[team_a]["last_matches"].append(0)
+    teams_dict[team_b]["last_matches"].append(3)
+  else:
+    # Empate
+    teams_dict[team_a]["last_matches"].append(1)
+    teams_dict[team_b]["last_matches"].append(1)
+
+  # Convertir el resultado al estandar de Elo (1, 0.5, 0)
+  if result == 1:
+      r_a, r_b = 1, 0
+  elif result == -1:
+      r_a, r_b = 0, 1
+  else:
+      r_a, r_b = 0.5, 0.5
+  
+  # Definir que tanto afecta un solo partido al historial
+  K = 40 # Factor de peso
+  
+  # Calcular los nuevos valores de Elo
+  new_elo_a = elo_a + K * (r_a - expect_a)
+  new_elo_b = elo_b + K * (r_b - expect_b)
+  
+  # Guardar los nuevos valores actualizados
+  teams_dict[team_a]["elo"] = new_elo_a
+  teams_dict[team_b]["elo"] = new_elo_b
