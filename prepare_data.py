@@ -84,3 +84,10 @@ for idx, row in df.iterrows():
   # Guardar los nuevos valores actualizados
   teams_dict[team_a]["elo"] = new_elo_a
   teams_dict[team_b]["elo"] = new_elo_b
+
+df = df.round({"elo_a": 2, "elo_b": 2, "forma_a": 2, "forma_b": 2})
+df["ranking_a"] = df["ranking_a"].astype(int)
+df["ranking_b"] = df["ranking_b"].astype(int)
+
+df.to_csv("./csv/historic-matches-processed.csv", index=False)
+print("Archivo guardado correctamente!")
