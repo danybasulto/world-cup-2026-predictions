@@ -28,3 +28,17 @@ for idx, row in df.iterrows():
       "elo": row["elo_b"],
       "last_matches": deque(maxlen=5)
     }
+  
+  # --- Actualizar la forma de los equipos ---
+  list_a = teams_dict[team_a]["last_matches"]
+  list_b = teams_dict[team_b]["last_matches"]
+
+  if len(list_a) > 0:
+      df.at[idx, "forma_a"] = sum(list_a) / len(list_a)
+  else:
+      df.at[idx, "forma_a"] = 1 # valor por defecto
+  
+  if len(list_b) > 0:
+      df.at[idx, "forma_b"] = sum(list_b) / len(list_b)
+  else:
+      df.at[idx, "forma_b"] = 1 # valor por defecto
